@@ -46,6 +46,12 @@ import numpy as np
 from torch import optim
 import torch.nn as nn
 from torchvision import models
+import gc
+
+gc.collect()
+
+torch.cuda.empty_cache()
+
 transform = transforms.Compose(
  [transforms.ToTensor(),
  transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
@@ -59,7 +65,7 @@ test_set = torch.utils.data.Subset(dataset, range(n_test))  # take first 20%
 train_set = torch.utils.data.Subset(dataset, range(n_test, n))  # take the rest
 
 
-trainloader = torch.utils.data.DataLoader(train_set, batch_size=1, shuffle=True, num_workers=2)
+trainloader = torch.utils.data.DataLoader(train_set, batch_size=10, shuffle=True, num_workers=2)
 testloader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False,num_workers=2)
 
 
