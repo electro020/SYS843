@@ -50,11 +50,11 @@ transform = transforms.Compose(
  [transforms.ToTensor(),
  transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-dataset=torchvision.datasets.ImageFolder(root="D:\geordi\ecole\Automn2022\SYS843\pycharmprojects\database",transform=transform)
+dataset=torchvision.datasets.ImageFolder(root="/home/ens/AP69690/SYS843/database",transform=transform)
 
 n = len(dataset)
 n_test= int(0.2*n)
-
+print(n)
 test_set = torch.utils.data.Subset(dataset, range(n_test))  # take first 20%
 train_set = torch.utils.data.Subset(dataset, range(n_test, n))  # take the rest
 
