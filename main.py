@@ -6,6 +6,16 @@ if __name__ == '__main__':
     import torch
     import torchvision
     import torchvision.transforms as transforms
+    import numpy as np
+    import torch.optim as optim
+    import torch
+    import torchvision
+    import torchvision.transforms as transforms
+    import numpy as np
+    from torch import optim
+    import torch.nn as nn
+    from torchvision import models
+    import gc
     #import normal_preprocessing as NO
     #import cropping as crop
     #import left_bundle_preprocessing as LB
@@ -15,7 +25,6 @@ if __name__ == '__main__':
     #import paced_beat_preprocessing as PB
     #import ventricular_premature_contraction_preprocessing as V
     #import create_dataset
-    import numpy as np
 
     #########################################################
     #Image Generation
@@ -41,19 +50,10 @@ if __name__ == '__main__':
     #########################################################
     #Datase creation
     #########################################################
-
-    import torch
-    import torchvision
-    import torchvision.transforms as transforms
-    import numpy as np
-    from torch import optim
-    import torch.nn as nn
-    from torchvision import models
-    import gc
-
+    #we clear the GPU memory
     gc.collect()
-
     torch.cuda.empty_cache()
+
 
     transform = transforms.Compose(
      [transforms.ToTensor(),
@@ -62,18 +62,23 @@ if __name__ == '__main__':
     dataset=torchvision.datasets.ImageFolder(root="/home/ens/AP69690/SYS843/database",transform=transform)
     #D:\geordi\ecole\Automn2022\SYS843\pycharmprojects\database
     #/home/ens/AP69690/SYS843/database
-    n = len(dataset)
-    n_test= int(0.2*n)
-    print(n)
-    test_set = torch.utils.data.Subset(dataset, range(n_test))  # take first 20%
-    train_set = torch.utils.data.Subset(dataset, range(n_test, n))  # take the rest
 
+    N = len(dataset)
+    print(N)
+    # generate & shuffle indices
+    indices = np.arange(N)
+    indices = np.random.permutation(indices)
+
+    # select train/test, for demo I am using 80,20 trains/test
+    train_indices = indices[:int(0.8 * N)]
+    test_indices = indices[int(0.8 * N):int(N)]
+
+
+    train_set = torch.utils.data.Subset(dataset, train_indices)
+    test_set = torch.utils.data.Subset(dataset, test_indices)
 
     trainloader = torch.utils.data.DataLoader(train_set, batch_size=10, shuffle=True, num_workers=2)
     testloader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False,num_workers=2)
-
-
-
 
     class HeartNet(nn.Module):
         def __init__(self, num_classes=7):
@@ -119,11 +124,8 @@ if __name__ == '__main__':
 
     net = HeartNet()
 
-
     # On utilise la descente de gradient stochastique comme optimiseur. D'autres méthodes sont existante mais celle-ci reste très utilisée.
     optimizer = optim.Adam(net.parameters(),lr=0.0001)
-
-    import torch.optim as optim
 
     print(torch.cuda.memory_summary(device=None, abbreviated=False))
     torch.cuda.empty_cache()
