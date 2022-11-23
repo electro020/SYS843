@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
     import torch.optim as optim
 
-    torch.cuda.memory_summary(device=None, abbreviated=False)
+    print(torch.cuda.memory_summary(device=None, abbreviated=False))
     torch.cuda.empty_cache()
     gpu = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     # Model et optimizer déjà définis dans les questions précédentes
