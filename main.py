@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
     print(torch.cuda.memory_summary(device=None, abbreviated=False))
     torch.cuda.empty_cache()
-    gpu = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    gpu = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu')
     # Model et optimizer déjà définis dans les questions précédentes
     criterion = nn.CrossEntropyLoss() # Fonction de coût qui permettra le calcul de l'erreur
     net.to(gpu)
