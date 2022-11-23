@@ -124,6 +124,9 @@ if __name__ == '__main__':
     optimizer = optim.Adam(net.parameters(),lr=0.0001)
 
     import torch.optim as optim
+
+    torch.cuda.memory_summary(device=None, abbreviated=False)
+    torch.cuda.empty_cache()
     gpu = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     # Model et optimizer déjà définis dans les questions précédentes
     criterion = nn.CrossEntropyLoss() # Fonction de coût qui permettra le calcul de l'erreur
