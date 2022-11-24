@@ -133,7 +133,7 @@ if __name__ == '__main__':
     # On utilise la descente de gradient stochastique comme optimiseur. D'autres méthodes sont existante mais celle-ci reste très utilisée.
     optimizer = optim.Adam(net.parameters(),lr=0.0001)
 
-    print(torch.cuda.memory_summary(device=None, abbreviated=False))
+    print(torch.cuda.memory_summary(device=1, abbreviated=False))
     torch.cuda.empty_cache()
     gpu = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
     # Model et optimizer déjà définis dans les questions précédentes
@@ -187,6 +187,6 @@ if __name__ == '__main__':
             Confusion_matrix[6][pred] += 1
 
       print(f"Epoch : {epoch + 1} - Taux de classification = {correct / len(testloader)}")
-      print(Confusion_matrix)
+      print(Confusion_matrix.astype(int))
     print('Finished Training')
 
