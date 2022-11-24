@@ -73,8 +73,8 @@ if __name__ == '__main__':
     indices = np.random.permutation(indices)
 
     # select train/test, for demo I am using 80,20 trains/test
-    train_indices = indices[:int(0.001 * N)]
-    test_indices = indices[int(0.001 * N):int(0.002*N)]
+    train_indices = indices[:int(0.01 * N)]
+    test_indices = indices[int(0.01 * N):int(0.02*N)]
 
     #train_indices = indices[:int(0.8 * N)]
     #test_indices = indices[int(0.8 * N):int(N)]
