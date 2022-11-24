@@ -164,10 +164,10 @@ if __name__ == '__main__':
           running_loss = 0.0
           correct = 0
           Confusion_matrix = Confusion_matrix * 0
-          print("******************************************************************")
-          print("****************************EVALUATION****************************")
-          print("******************************************************************")
           net.eval()
+      print("******************************************************************")
+      print("****************************EVALUATION****************************")
+      print("******************************************************************")
       for i, data in tqdm(enumerate(testloader, 0)):
         inputs, labels = data[0].to(gpu), data[1].to(gpu)
         outputs = net(inputs)
@@ -175,7 +175,6 @@ if __name__ == '__main__':
                                 # mon_tenseur.argmax(-1) donnera le même résultat
         if pred == labels: # On est pas obligé de sortir la donnée via pred[0] et labels[0] car il n'y a qu'une valeur dans le tenseur, mais on peut, les deux reviennent au même
           correct += 1
-
         if labels == 0:#Atrial_premature
             Confusion_matrix[0][pred] += 1
         if labels == 1:#Left_bundle
