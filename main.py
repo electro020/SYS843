@@ -3,6 +3,7 @@
 
 from __future__ import division, print_function
 if __name__ == '__main__':
+    import matplotlib.pyplot as plt
     import torch
     import torchvision
     import torchvision.transforms as transforms
@@ -18,6 +19,14 @@ if __name__ == '__main__':
     from torchvision import models
     import gc
     from collections import Counter
+
+    from sklearn.metrics import confusion_matrix
+    import seaborn as sn
+    import pandas as pd
+
+    y_pred = []
+    y_true = []
+
     #import normal_preprocessing as NO
     #import cropping as crop
     #import left_bundle_preprocessing as LB
@@ -79,8 +88,11 @@ if __name__ == '__main__':
     #train_indices = indices[:int(0.01 * N)]
     #test_indices = indices[int(0.01 * N):int(0.02*N)]
 
-    train_indices = indices[:int(0.8 * N)]
-    test_indices = indices[int(0.8 * N):int(N)]
+    #train_indices = indices[:int(0.8 * N)]
+    #test_indices = indices[int(0.8 * N):int(N)]
+
+    train_indices = indices[:int(0.01 * N)]
+    test_indices = indices[int(0.01 * N):int(N*0.02)]
 
 
     train_set = torch.utils.data.Subset(dataset, train_indices)
@@ -190,8 +202,24 @@ if __name__ == '__main__':
             Confusion_matrix[5][pred] += 1
         if labels == 6:#Ventricular_premature
             Confusion_matrix[6][pred] += 1
+
+        output_trans = (torch.max(torch.exp(outputs), 1)[1]).data.cpu().numpy()
+        y_pred.extend(output_trans)  # Save Prediction
+
+        labels = labels.data.cpu().numpy()
+        y_true.extend(labels)  # Save Truth
+
       print(f"Epoch : {epoch + 1} - Taux de classification = {correct / len(testloader)}")
       print(Confusion_matrix.astype(int))
+      ###################################################################################
+      cf_matrix = confusion_matrix(y_true, y_pred)
+      df_cm = pd.DataFrame(cf_matrix / np.sum(cf_matrix) * 10, index=[i for i in classes],
+                           columns=[i for i in classes])
+      plt.figure(figsize=(12, 7))
+      sn.heatmap(df_cm, annot=True)
+      plt.savefig('output.png')
+      ##################################################################################
       print("******************************************************************")
+
     print('Finished Training')
 
