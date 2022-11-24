@@ -17,6 +17,7 @@ if __name__ == '__main__':
     from tqdm.auto import tqdm
     from torchvision import models
     import gc
+    from collections import Counter
     #import normal_preprocessing as NO
     #import cropping as crop
     #import left_bundle_preprocessing as LB
@@ -66,8 +67,8 @@ if __name__ == '__main__':
     #D:\geordi\ecole\Automn2022\SYS843\pycharmprojects\database
     #/home/ens/AP69690/SYS843/database
     print(dataset.class_to_idx)
+    print(dict(Counter(dataset.targets)))
     Confusion_matrix = np.zeros((7,7))
-    print(Confusion_matrix)
     N = len(dataset)
     print(N)
     # generate & shuffle indices
