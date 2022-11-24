@@ -64,11 +64,9 @@ if __name__ == '__main__':
     #D:\geordi\ecole\Automn2022\SYS843\pycharmprojects\database
     #/home/ens/AP69690/SYS843/database
     print(dataset.class_to_idx)
-    Confusion_matrix = np.zeros((7,7))
+    Confusion_matrix = np.ones((7,7))
     print(Confusion_matrix)
-    for i in Confusion_matrix:
-        for j in i:
-            j = 1;
+    Confusion_matrix=Confusion_matrix*0
     print(Confusion_matrix)
     N = len(dataset)
     print(N)
