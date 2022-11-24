@@ -60,9 +60,12 @@ if __name__ == '__main__':
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     dataset=torchvision.datasets.ImageFolder(root="/home/ens/AP69690/SYS843/database",transform=transform)
+
     #D:\geordi\ecole\Automn2022\SYS843\pycharmprojects\database
     #/home/ens/AP69690/SYS843/database
-
+    print(dataset.class_to_idx)
+    Confusion_matrix = np.zeros((7,7))
+    print(Confusion_matrix)
     N = len(dataset)
     print(N)
     # generate & shuffle indices
@@ -70,8 +73,10 @@ if __name__ == '__main__':
     indices = np.random.permutation(indices)
 
     # select train/test, for demo I am using 80,20 trains/test
-    train_indices = indices[:int(0.8 * N)]
-    test_indices = indices[int(0.8 * N):int(N)]
+    train_indices = indices[:int(0.08 * N)]
+    test_indices = indices[int(0.08 * N):int(0.16*N)]
+
+    #test_indices = indices[int(0.8 * N):int(N)]
 
 
     train_set = torch.utils.data.Subset(dataset, train_indices)
@@ -164,5 +169,23 @@ if __name__ == '__main__':
                                 # mon_tenseur.argmax(-1) donnera le même résultat
         if pred == labels: # On est pas obligé de sortir la donnée via pred[0] et labels[0] car il n'y a qu'une valeur dans le tenseur, mais on peut, les deux reviennent au même
           correct += 1
+
+        if labels == 0:#Atrial_premature
+            Confusion_matrix[0][pred] += 1
+        if labels == 1:#Left_bundle
+            Confusion_matrix[1][pred] += 1
+        if labels == 2:#Normal
+            Confusion_matrix[2][pred] += 1
+        if labels == 3:#Paced_beat
+            Confusion_matrix[3][pred] += 1
+        if labels == 4:#Right_bundle
+            Confusion_matrix[4][pred] += 1
+        if labels == 5:#Ventricular_escape
+            Confusion_matrix[5][pred] += 1
+        if labels == 6:#Ventricular_premature
+            Confusion_matrix[6][pred] += 1
+
       print(f"Epoch : {epoch + 1} - Taux de classification = {correct / len(testloader)}")
+      print(Confusion_matrix)
     print('Finished Training')
+
