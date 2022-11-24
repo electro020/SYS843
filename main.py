@@ -14,6 +14,7 @@ if __name__ == '__main__':
     import numpy as np
     from torch import optim
     import torch.nn as nn
+    from tqdm.auto import tqdm
     from torchvision import models
     import gc
     #import normal_preprocessing as NO
@@ -64,9 +65,7 @@ if __name__ == '__main__':
     #D:\geordi\ecole\Automn2022\SYS843\pycharmprojects\database
     #/home/ens/AP69690/SYS843/database
     print(dataset.class_to_idx)
-    Confusion_matrix = np.ones((7,7))
-    print(Confusion_matrix)
-    Confusion_matrix=Confusion_matrix*0
+    Confusion_matrix = np.zeros((7,7))
     print(Confusion_matrix)
     N = len(dataset)
     print(N)
@@ -75,11 +74,11 @@ if __name__ == '__main__':
     indices = np.random.permutation(indices)
 
     # select train/test, for demo I am using 80,20 trains/test
-    train_indices = indices[:int(0.01 * N)]
-    test_indices = indices[int(0.01 * N):int(0.02*N)]
+    #train_indices = indices[:int(0.01 * N)]
+    #test_indices = indices[int(0.01 * N):int(0.02*N)]
 
-    #train_indices = indices[:int(0.8 * N)]
-    #test_indices = indices[int(0.8 * N):int(N)]
+    train_indices = indices[:int(0.8 * N)]
+    test_indices = indices[int(0.8 * N):int(N)]
 
 
     train_set = torch.utils.data.Subset(dataset, train_indices)
@@ -140,10 +139,10 @@ if __name__ == '__main__':
     # Model et optimizer déjà définis dans les questions précédentes
     criterion = nn.CrossEntropyLoss() # Fonction de coût qui permettra le calcul de l'erreur
     net.to(gpu)
-    for epoch in range(9): # loop sur le dataset 5 fois
+    for epoch in range(10): # loop sur le dataset 5 fois
       running_loss = 0.0
       net.train()
-      for i, data in enumerate(trainloader, 0): # En mettant data de cette façon, data est un tuple tel que data = (image, label)
+      for i, data in tqdm(enumerate(trainloader, 0)): # En mettant data de cette façon, data est un tuple tel que data = (image, label)
 
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data[0].to(gpu), data[1].to(gpu)
@@ -159,38 +158,36 @@ if __name__ == '__main__':
 
         # print statistics
         running_loss += loss.item() # .item() retourne la valeur dans le tenseur et non le tenseur lui même
-        if i % 1000 == 999: # print every 1000 mini-batches (On a 50 000 données et mon batch size est de 10 donc on aura 5 000 itération sur le dataloader d'entraînement)
-          print(f"[epoch {epoch + 1}, batch {i+1}/{int(len(dataset.targets)/10)}], loss : {running_loss / 1_000}")
+        if i % 5000 == 4999: # print every 5000 mini-batches
+          print(f"[epoch {epoch + 1}, batch {i+1}/{int(len(dataset.targets)/10)}], loss : {running_loss / 5_000}")
           running_loss = 0.0
-      correct = 0
-      for i in Confusion_matrix:
-          for j in i:
-              j=0;
-      net.eval()
-      for i, data in enumerate(testloader, 0):
-        inputs, labels = data[0].to(gpu), data[1].to(gpu)
-        outputs = net(inputs)
-        pred = outputs.argmax() # mon_tenseur.argmax() donne l'index de l'élément le plus élevé de l'output, et donc on récupère la classe prédite par notre algo
-                                # mon_tenseur.argmax(-1) donnera le même résultat
-        if pred == labels: # On est pas obligé de sortir la donnée via pred[0] et labels[0] car il n'y a qu'une valeur dans le tenseur, mais on peut, les deux reviennent au même
-          correct += 1
+          correct = 0
+          Confusion_matrix = Confusion_matrix * 0
+          net.eval()
+          for i, data in tqdm(enumerate(testloader, 0)):
+            inputs, labels = data[0].to(gpu), data[1].to(gpu)
+            outputs = net(inputs)
+            pred = outputs.argmax() # mon_tenseur.argmax() donne l'index de l'élément le plus élevé de l'output, et donc on récupère la classe prédite par notre algo
+                                    # mon_tenseur.argmax(-1) donnera le même résultat
+            if pred == labels: # On est pas obligé de sortir la donnée via pred[0] et labels[0] car il n'y a qu'une valeur dans le tenseur, mais on peut, les deux reviennent au même
+              correct += 1
 
-        if labels == 0:#Atrial_premature
-            Confusion_matrix[0][pred] += 1
-        if labels == 1:#Left_bundle
-            Confusion_matrix[1][pred] += 1
-        if labels == 2:#Normal
-            Confusion_matrix[2][pred] += 1
-        if labels == 3:#Paced_beat
-            Confusion_matrix[3][pred] += 1
-        if labels == 4:#Right_bundle
-            Confusion_matrix[4][pred] += 1
-        if labels == 5:#Ventricular_escape
-            Confusion_matrix[5][pred] += 1
-        if labels == 6:#Ventricular_premature
-            Confusion_matrix[6][pred] += 1
+            if labels == 0:#Atrial_premature
+                Confusion_matrix[0][pred] += 1
+            if labels == 1:#Left_bundle
+                Confusion_matrix[1][pred] += 1
+            if labels == 2:#Normal
+                Confusion_matrix[2][pred] += 1
+            if labels == 3:#Paced_beat
+                Confusion_matrix[3][pred] += 1
+            if labels == 4:#Right_bundle
+                Confusion_matrix[4][pred] += 1
+            if labels == 5:#Ventricular_escape
+                Confusion_matrix[5][pred] += 1
+            if labels == 6:#Ventricular_premature
+                Confusion_matrix[6][pred] += 1
 
-      print(f"Epoch : {epoch + 1} - Taux de classification = {correct / len(testloader)}")
-      print(Confusion_matrix.astype(int))
+          print(f"Epoch : {epoch + 1} - Taux de classification = {correct / len(testloader)}")
+          print(Confusion_matrix.astype(int))
     print('Finished Training')
 
