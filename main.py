@@ -66,6 +66,10 @@ if __name__ == '__main__':
     print(dataset.class_to_idx)
     Confusion_matrix = np.zeros((7,7))
     print(Confusion_matrix)
+    for i in Confusion_matrix:
+        for j in i:
+            j = 1;
+    print(Confusion_matrix)
     N = len(dataset)
     print(N)
     # generate & shuffle indices
@@ -161,6 +165,9 @@ if __name__ == '__main__':
           print(f"[epoch {epoch + 1}, batch {i+1}/{int(len(dataset.targets)/10)}], loss : {running_loss / 1_000}")
           running_loss = 0.0
       correct = 0
+      for i in Confusion_matrix:
+          for j in i:
+              j=0;
       net.eval()
       for i, data in enumerate(testloader, 0):
         inputs, labels = data[0].to(gpu), data[1].to(gpu)
