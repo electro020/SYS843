@@ -23,6 +23,8 @@ if __name__ == '__main__':
     from sklearn.metrics import confusion_matrix
     import seaborn as sn
     import pandas as pd
+    import time
+
 
     y_pred = []
     y_true = []
@@ -217,7 +219,9 @@ if __name__ == '__main__':
                            columns=[i for i in classes])
       plt.figure(figsize=(12, 7))
       sn.heatmap(df_cm, annot=True)
-      plt.savefig('output.png')
+      t = time.localtime()
+      current_time = time.strftime("%H:%M:%S", t)
+      plt.savefig('output'+current_time+'.png')
       ##################################################################################
       print("******************************************************************")
 
