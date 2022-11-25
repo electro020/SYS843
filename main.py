@@ -177,12 +177,13 @@ if __name__ == '__main__':
         if i % 1000 == 999: # print every 1000 mini-batche
 
             with open('loss/loss.txt', 'a') as the_file:
-                the_file.write(str(running_loss)+';'+str(i+(epoch-1)*85000)+'\n')
-            print(f"[epoch {epoch + 1}, batch {i+1}/{int(len(dataset.targets)/10)}], loss : {running_loss / 1000}")
+                the_file.write(str(running_loss)+';'+str(i+(epoch-1)*31_720)+'\n')
+            print(f"[epoch {epoch + 1}, batch {i+1}/{int(len(dataset.targets)/10*0.8)}], loss : {running_loss / 1000}")
             running_loss = 0.0
             correct = 0
             Confusion_matrix = Confusion_matrix * 0
-            net.eval()
+
+      net.eval()
       print("******************************************************************")
       print("****************************EVALUATION****************************")
       print("******************************************************************")
