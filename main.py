@@ -67,7 +67,7 @@ if __name__ == '__main__':
     gc.collect()
     torch.cuda.empty_cache()
 
-    classes =('images_atrial_premature', 'images_left_bundle', 'images_normal', 'images_paced_beat', 'images_right_bundle', 'images_ventricular_escape', 'images_ventricular_premature')
+    classes =('APC', 'LBB', 'NOR', 'PAB', 'RBB', 'VEB', 'PVB')
 
     transform = transforms.Compose(
      [transforms.ToTensor(),
@@ -215,13 +215,13 @@ if __name__ == '__main__':
       print(Confusion_matrix.astype(int))
       ###################################################################################
       cf_matrix = confusion_matrix(y_true, y_pred)
-      df_cm = pd.DataFrame(cf_matrix / np.sum(cf_matrix) * 10, index=[i for i in classes],
+      df_cm = pd.DataFrame(cf_matrix, index=[i for i in classes],
                            columns=[i for i in classes])
       plt.figure(figsize=(12, 7))
       sn.heatmap(df_cm, annot=True)
       t = time.localtime()
       current_time = time.strftime("%H:%M:%S", t)
-      plt.savefig('output'+current_time+'.png')
+      plt.savefig('outputs/output'+current_time+'epoch_'+ epoch +'.png')
       ##################################################################################
       print("******************************************************************")
 
