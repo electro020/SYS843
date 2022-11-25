@@ -176,7 +176,7 @@ if __name__ == '__main__':
         running_loss += loss.item() # .item() retourne la valeur dans le tenseur et non le tenseur lui même
         if i % 1000 == 999: # print every 1000 mini-batche
             filehandle = open('loss/loss.txt', 'w')
-            filehandle.write((running_loss+(epoch-1)*85000)+';'+'\n')
+            filehandle.write(str(running_loss)+';'+str(i+(epoch-1)*85000)+'\n')
             filehandle.close()
             print(f"[epoch {epoch + 1}, batch {i+1}/{int(len(dataset.targets)/10)}], loss : {running_loss / 1000}")
             running_loss = 0.0
