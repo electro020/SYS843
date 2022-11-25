@@ -90,18 +90,18 @@ if __name__ == '__main__':
     #train_indices = indices[:int(0.01 * N)]
     #test_indices = indices[int(0.01 * N):int(0.02*N)]
 
-    train_indices = indices[:int(0.8 * N)]
-    test_indices = indices[int(0.8 * N):int(N)]
+    #train_indices = indices[:int(0.8 * N)]
+    #test_indices = indices[int(0.8 * N):int(N)]
 
-    #train_indices = indices[:int(0.01 * N)]
-    #test_indices = indices[int(0.01 * N):int(N*0.02)]
+    train_indices = indices[:int(0.01 * N)]
+    test_indices = indices[int(0.01 * N):int(N*0.02)]
 
 
     train_set = torch.utils.data.Subset(dataset, train_indices)
     test_set = torch.utils.data.Subset(dataset, test_indices)
 
-    trainloader = torch.utils.data.DataLoader(train_set, batch_size=10, shuffle=True, num_workers=2)
-    testloader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False,num_workers=2)
+    trainloader = torch.utils.data.DataLoader(train_set, batch_size=100, shuffle=True, num_workers=2)
+    testloader = torch.utils.data.DataLoader(test_set, batch_size=10, shuffle=False,num_workers=2)
 
     class HeartNet(nn.Module):
         def __init__(self, num_classes=7):
@@ -175,9 +175,9 @@ if __name__ == '__main__':
         # print statistics
         running_loss += loss.item() # .item() retourne la valeur dans le tenseur et non le tenseur lui même
         if i % 1000 == 999: # print every 1000 mini-batche
-            filehandle = open('loss/loss.txt', 'w')
-            filehandle.write(str(running_loss)+';'+str(i+(epoch-1)*85000)+'\n')
-            filehandle.close()
+
+            with open('loss/loss.txt', 'a') as the_file:
+                the_file.write(str(running_loss)+';'+str(i+(epoch-1)*85000)+'\n')
             print(f"[epoch {epoch + 1}, batch {i+1}/{int(len(dataset.targets)/10)}], loss : {running_loss / 1000}")
             running_loss = 0.0
             correct = 0
@@ -224,7 +224,7 @@ if __name__ == '__main__':
       sn.heatmap(df_cm, annot=True)
       t = time.localtime()
       current_time = time.strftime("%H:%M:%S", t)
-      plt.savefig('outputs/output'+current_time+'epoch_'+ epoch +'.png')
+      plt.savefig('outputs/output'+current_time+'_epoch_'+ str(epoch) +'.png')
       ##################################################################################
       print("******************************************************************")
 
