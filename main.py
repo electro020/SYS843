@@ -90,11 +90,11 @@ if __name__ == '__main__':
     #train_indices = indices[:int(0.01 * N)]
     #test_indices = indices[int(0.01 * N):int(0.02*N)]
 
-    train_indices = indices[:int(0.8 * N)]
-    test_indices = indices[int(0.8 * N):int(N)]
+    #train_indices = indices[:int(0.8 * N)]
+    #test_indices = indices[int(0.8 * N):int(N)]
 
-    #train_indices = indices[:int(0.01 * N)]
-    #test_indices = indices[int(0.01 * N):int(N*0.02)]
+    train_indices = indices[:int(0.01 * N)]
+    test_indices = indices[int(0.01 * N):int(N*0.02)]
 
 
     train_set = torch.utils.data.Subset(dataset, train_indices)
@@ -174,12 +174,15 @@ if __name__ == '__main__':
 
         # print statistics
         running_loss += loss.item() # .item() retourne la valeur dans le tenseur et non le tenseur lui même
-        if i % 1000 == 999: # print every 1000 mini-batches
-          print(f"[epoch {epoch + 1}, batch {i+1}/{int(len(dataset.targets)/10)}], loss : {running_loss / 1000}")
-          running_loss = 0.0
-          correct = 0
-          Confusion_matrix = Confusion_matrix * 0
-          net.eval()
+        if i % 1000 == 999: # print every 1000 mini-batche
+            filehandle = open('loss/loss.txt', 'w')
+            filehandle.write((running_loss+(epoch-1)*85000)+';'+'\n')
+            filehandle.close()
+            print(f"[epoch {epoch + 1}, batch {i+1}/{int(len(dataset.targets)/10)}], loss : {running_loss / 1000}")
+            running_loss = 0.0
+            correct = 0
+            Confusion_matrix = Confusion_matrix * 0
+            net.eval()
       print("******************************************************************")
       print("****************************EVALUATION****************************")
       print("******************************************************************")
