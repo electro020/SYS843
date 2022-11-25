@@ -90,11 +90,11 @@ if __name__ == '__main__':
     #train_indices = indices[:int(0.01 * N)]
     #test_indices = indices[int(0.01 * N):int(0.02*N)]
 
-    #train_indices = indices[:int(0.8 * N)]
-    #test_indices = indices[int(0.8 * N):int(N)]
+    train_indices = indices[:int(0.8 * N)]
+    test_indices = indices[int(0.8 * N):int(N)]
 
-    train_indices = indices[:int(0.01 * N)]
-    test_indices = indices[int(0.01 * N):int(N*0.02)]
+    #train_indices = indices[:int(0.01 * N)]
+    #test_indices = indices[int(0.01 * N):int(N*0.02)]
 
 
     train_set = torch.utils.data.Subset(dataset, train_indices)
