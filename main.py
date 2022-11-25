@@ -90,11 +90,11 @@ if __name__ == '__main__':
     #train_indices = indices[:int(0.01 * N)]
     #test_indices = indices[int(0.01 * N):int(0.02*N)]
 
-    #train_indices = indices[:int(0.8 * N)]
-    #test_indices = indices[int(0.8 * N):int(N)]
+    train_indices = indices[:int(0.8 * N)]
+    test_indices = indices[int(0.8 * N):int(N)]
 
-    train_indices = indices[:int(0.01 * N)]
-    test_indices = indices[int(0.01 * N):int(N*0.02)]
+    #train_indices = indices[:int(0.01 * N)]
+    #test_indices = indices[int(0.01 * N):int(N*0.02)]
 
 
     train_set = torch.utils.data.Subset(dataset, train_indices)
@@ -218,13 +218,13 @@ if __name__ == '__main__':
       print(Confusion_matrix.astype(int))
       ###################################################################################
       cf_matrix = confusion_matrix(y_true, y_pred)
-      df_cm = pd.DataFrame(cf_matrix, index=[i for i in classes],
+      df_cm = pd.DataFrame(cf_matrix/np.sum(cf_matrix) *7, index=[i for i in classes],
                            columns=[i for i in classes])
       plt.figure(figsize=(12, 7))
       sn.heatmap(df_cm, annot=True)
       t = time.localtime()
       current_time = time.strftime("%H:%M:%S", t)
-      plt.savefig('outputs/output'+current_time+'_epoch_'+ str(epoch) +'.png')
+      plt.savefig('outputs/output_'+current_time+'_epoch_'+ str(epoch) +'.png')
       ##################################################################################
       print("******************************************************************")
 
