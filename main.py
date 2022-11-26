@@ -63,6 +63,10 @@ if __name__ == '__main__':
     #########################################################
     #Datase creation
     #########################################################
+
+    eval_losses = []
+    eval_accu = []
+
     #we clear the GPU memory
     gc.collect()
     torch.cuda.empty_cache()
@@ -97,7 +101,8 @@ if __name__ == '__main__':
     train_set = torch.utils.data.Subset(dataset, train_indices)
     test_set = torch.utils.data.Subset(dataset, validation_indices)
 
-    trainloader = torch.utils.data.DataLoader(train_set, batch_size=100, shuffle=True, num_workers=8)
+    trainloader = torch.utils.data.DataLoader(train_set, batch_size=10, shuffle=True, num_workers=8)
+    trainloader_acc = torch.utils.data.DataLoader(train_set, batch_size=1, shuffle=True, num_workers=8)
     validationloader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=8)
 
     class HeartNet(nn.Module):
@@ -174,57 +179,108 @@ if __name__ == '__main__':
         if i % 1000 == 999: # print every 1000 mini-batche
 
             with open('loss/loss.txt', 'a') as the_file:
-                the_file.write(str(running_loss)+';'+str(i+(epoch-1)*31_720)+'\n')
+                the_file.write(str(running_loss)+';'+str(i+(epoch-1)*int(len(dataset.targets)/10*0.8))+'\n')
             print(f"[epoch {epoch + 1}, batch {i+1}/{int(len(dataset.targets)/10*0.8)}], loss : {running_loss / 1000}")
             running_loss = 0.0
+            ##############################################################################################################################
+            ###############################################ACCURACY EVALUATION############################################################
+            ##############################################################################################################################
+            net.eval()
             correct = 0
             Confusion_matrix = Confusion_matrix * 0
+            print("******************************************************************")
+            print("****************************EVALUATION****************************")
+            print("******************************************************************")
+            for increment_val, data in tqdm(enumerate(validationloader, 0)):
+                inputs, labels = data[0].to(gpu), data[1].to(gpu)
+                outputs = net(inputs)
+                pred = outputs.argmax()  # mon_tenseur.argmax() donne l'index de l'élément le plus élevé de l'output, et donc on récupère la classe prédite par notre algo
+                # mon_tenseur.argmax(-1) donnera le même résultat
+                if pred == labels:  # On est pas obligé de sortir la donnée via pred[0] et labels[0] car il n'y a qu'une valeur dans le tenseur, mais on peut, les deux reviennent au même
+                    correct += 1
+                if labels == 0:  # Atrial_premature
+                    Confusion_matrix[0][pred] += 1
+                if labels == 1:  # Left_bundle
+                    Confusion_matrix[1][pred] += 1
+                if labels == 2:  # Normal
+                    Confusion_matrix[2][pred] += 1
+                if labels == 3:  # Paced_beat
+                    Confusion_matrix[3][pred] += 1
+                if labels == 4:  # Right_bundle
+                    Confusion_matrix[4][pred] += 1
+                if labels == 5:  # Ventricular_escape
+                    Confusion_matrix[5][pred] += 1
+                if labels == 6:  # Ventricular_premature
+                    Confusion_matrix[6][pred] += 1
 
-      net.eval()
-      print("******************************************************************")
-      print("****************************EVALUATION****************************")
-      print("******************************************************************")
-      for i, data in tqdm(enumerate(validationloader, 0)):
-        inputs, labels = data[0].to(gpu), data[1].to(gpu)
-        outputs = net(inputs)
-        pred = outputs.argmax() # mon_tenseur.argmax() donne l'index de l'élément le plus élevé de l'output, et donc on récupère la classe prédite par notre algo
-                                # mon_tenseur.argmax(-1) donnera le même résultat
-        if pred == labels: # On est pas obligé de sortir la donnée via pred[0] et labels[0] car il n'y a qu'une valeur dans le tenseur, mais on peut, les deux reviennent au même
-          correct += 1
-        if labels == 0:#Atrial_premature
-            Confusion_matrix[0][pred] += 1
-        if labels == 1:#Left_bundle
-            Confusion_matrix[1][pred] += 1
-        if labels == 2:#Normal
-            Confusion_matrix[2][pred] += 1
-        if labels == 3:#Paced_beat
-            Confusion_matrix[3][pred] += 1
-        if labels == 4:#Right_bundle
-            Confusion_matrix[4][pred] += 1
-        if labels == 5:#Ventricular_escape
-            Confusion_matrix[5][pred] += 1
-        if labels == 6:#Ventricular_premature
-            Confusion_matrix[6][pred] += 1
+                output_trans = (torch.max(torch.exp(outputs), 1)[1]).data.cpu().numpy()
+                y_pred.extend(output_trans)  # Save Prediction
 
-        output_trans = (torch.max(torch.exp(outputs), 1)[1]).data.cpu().numpy()
-        y_pred.extend(output_trans)  # Save Prediction
+                labels = labels.data.cpu().numpy()
+                y_true.extend(labels)  # Save Truth
+            print(f"Epoch : {epoch + 1} - Taux de classification = {correct / len(validationloader)}")
+            print(Confusion_matrix.astype(int))
+            ###################################################################################
+            cf_matrix = confusion_matrix(y_true, y_pred)
+            df_cm = pd.DataFrame(cf_matrix / np.sum(cf_matrix) * 7, index=[i for i in classes],
+                                 columns=[i for i in classes])
+            plt.figure(figsize=(12, 7))
+            sn.heatmap(df_cm, annot=True)
+            t = time.localtime()
+            current_time = time.strftime("%H:%M:%S", t)
+            plt.savefig('outputs/output_val_' + current_time + '_epoch_' + str(epoch) + '.png')
+            ##################################################################################
+            print("******************************************************************")
+            plt.close('all')
+            ##############################################################################################################################
+            #################################################ACCURACY TRAINING############################################################
+            ##############################################################################################################################
+            correct = 0
+            Confusion_matrix = Confusion_matrix * 0
+            print("******************************************************************")
+            print("****************************TRAINING******************************")
+            print("******************************************************************")
+            for increment_train, data in tqdm(enumerate(trainloader_acc, 0)):
+                inputs, labels = data[0].to(gpu), data[1].to(gpu)
+                outputs = net(inputs)
+                pred = outputs.argmax()  # mon_tenseur.argmax() donne l'index de l'élément le plus élevé de l'output, et donc on récupère la classe prédite par notre algo
+                # mon_tenseur.argmax(-1) donnera le même résultat
+                if pred == labels:  # On est pas obligé de sortir la donnée via pred[0] et labels[0] car il n'y a qu'une valeur dans le tenseur, mais on peut, les deux reviennent au même
+                    correct += 1
+                if labels == 0:  # Atrial_premature
+                    Confusion_matrix[0][pred] += 1
+                if labels == 1:  # Left_bundle
+                    Confusion_matrix[1][pred] += 1
+                if labels == 2:  # Normal
+                    Confusion_matrix[2][pred] += 1
+                if labels == 3:  # Paced_beat
+                    Confusion_matrix[3][pred] += 1
+                if labels == 4:  # Right_bundle
+                    Confusion_matrix[4][pred] += 1
+                if labels == 5:  # Ventricular_escape
+                    Confusion_matrix[5][pred] += 1
+                if labels == 6:  # Ventricular_premature
+                    Confusion_matrix[6][pred] += 1
 
-        labels = labels.data.cpu().numpy()
-        y_true.extend(labels)  # Save Truth
+                output_trans = (torch.max(torch.exp(outputs), 1)[1]).data.cpu().numpy()
+                y_pred.extend(output_trans)  # Save Prediction
 
-      print(f"Epoch : {epoch + 1} - Taux de classification = {correct / len(testloader)}")
-      print(Confusion_matrix.astype(int))
-      ###################################################################################
-      cf_matrix = confusion_matrix(y_true, y_pred)
-      df_cm = pd.DataFrame(cf_matrix/np.sum(cf_matrix) *7, index=[i for i in classes],
-                           columns=[i for i in classes])
-      plt.figure(figsize=(12, 7))
-      sn.heatmap(df_cm, annot=True)
-      t = time.localtime()
-      current_time = time.strftime("%H:%M:%S", t)
-      plt.savefig('outputs/output_'+current_time+'_epoch_'+ str(epoch) +'.png')
-      ##################################################################################
-      print("******************************************************************")
+                labels = labels.data.cpu().numpy()
+                y_true.extend(labels)  # Save Truth
+            print(f"Epoch : {epoch + 1} - Taux de classification = {correct / len(validationloader)}")
+            print(Confusion_matrix.astype(int))
+            ###################################################################################
+            cf_matrix = confusion_matrix(y_true, y_pred)
+            df_cm = pd.DataFrame(cf_matrix / np.sum(cf_matrix) * 7, index=[i for i in classes],
+                                 columns=[i for i in classes])
+            plt.figure(figsize=(12, 7))
+            sn.heatmap(df_cm, annot=True)
+            t = time.localtime()
+            current_time = time.strftime("%H:%M:%S", t)
+            plt.savefig('outputs/output_train_' + current_time + '_epoch_' + str(epoch) + '.png')
+            plt.close('all')
+            ##################################################################################
+            print("******************************************************************")
 
     print('Finished Training')
 
