@@ -97,7 +97,7 @@ if __name__ == '__main__':
     train_set = torch.utils.data.Subset(dataset, train_indices)
     test_set = torch.utils.data.Subset(dataset, validation_indices)
 
-    trainloader = torch.utils.data.DataLoader(train_set, batch_size=1, shuffle=True, num_workers=4)
+    trainloader = torch.utils.data.DataLoader(train_set, batch_size=10, shuffle=True, num_workers=4)
     validationloader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=4)
 
     class HeartNet(nn.Module):
