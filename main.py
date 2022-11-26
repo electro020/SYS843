@@ -95,8 +95,8 @@ if __name__ == '__main__':
     #test_indices = indices[int(0.01 * N):int(0.02*N)]
 
     train_indices = indices[:int(0.8 * N)]
-    validation_indices = indices[int(0.8 * N):int(0.9*N)]
-    test_indices = indices[int(0.9 * N):int(N)]
+    validation_indices = indices[int(0.8 * N):int(N)]
+    #test_indices = indices[int(0.9 * N):int(N)]
 
     train_set = torch.utils.data.Subset(dataset, train_indices)
     test_set = torch.utils.data.Subset(dataset, validation_indices)
