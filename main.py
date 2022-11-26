@@ -267,7 +267,7 @@ if __name__ == '__main__':
 
                 labels = labels.data.cpu().numpy()
                 y_true.extend(labels)  # Save Truth
-            print(f"Epoch : {epoch + 1} - Taux de classification = {correct / len(validationloader)}")
+            print(f"Epoch : {epoch + 1} - Taux de classification = {correct / len(trainloader_acc)}")
             print(Confusion_matrix.astype(int))
             ###################################################################################
             cf_matrix = confusion_matrix(y_true, y_pred)
