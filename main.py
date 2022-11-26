@@ -91,17 +91,14 @@ if __name__ == '__main__':
     #test_indices = indices[int(0.01 * N):int(0.02*N)]
 
     train_indices = indices[:int(0.8 * N)]
-    test_indices = indices[int(0.8 * N):int(N)]
-
-    #train_indices = indices[:int(0.01 * N)]
-    #test_indices = indices[int(0.01 * N):int(N*0.02)]
-
+    validation_indices = indices[int(0.8 * N):int(0.9*N)]
+    test_indices = indices[int(0.9 * N):int(N)]
 
     train_set = torch.utils.data.Subset(dataset, train_indices)
-    test_set = torch.utils.data.Subset(dataset, test_indices)
+    test_set = torch.utils.data.Subset(dataset, validation_indices)
 
-    trainloader = torch.utils.data.DataLoader(train_set, batch_size=10, shuffle=True, num_workers=2)
-    testloader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False,num_workers=2)
+    trainloader = torch.utils.data.DataLoader(train_set, batch_size=1, shuffle=True, num_workers=4)
+    validationloader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=4)
 
     class HeartNet(nn.Module):
         def __init__(self, num_classes=7):
@@ -187,7 +184,7 @@ if __name__ == '__main__':
       print("******************************************************************")
       print("****************************EVALUATION****************************")
       print("******************************************************************")
-      for i, data in tqdm(enumerate(testloader, 0)):
+      for i, data in tqdm(enumerate(validationloader, 0)):
         inputs, labels = data[0].to(gpu), data[1].to(gpu)
         outputs = net(inputs)
         pred = outputs.argmax() # mon_tenseur.argmax() donne l'index de l'élément le plus élevé de l'output, et donc on récupère la classe prédite par notre algo
