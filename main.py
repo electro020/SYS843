@@ -95,6 +95,7 @@ if __name__ == '__main__':
     #test_indices = indices[int(0.01 * N):int(0.02*N)]
 
     train_indices = indices[:int(0.8 * N)]
+    train_indices_acc = indices[:int(0.8 * N)]
     validation_indices = indices[int(0.8 * N):int(N)]
     #test_indices = indices[int(0.9 * N):int(N)]
 
@@ -102,7 +103,7 @@ if __name__ == '__main__':
     test_set = torch.utils.data.Subset(dataset, validation_indices)
 
     trainloader = torch.utils.data.DataLoader(train_set, batch_size=10, shuffle=True, num_workers=8)
-    trainloader_acc = torch.utils.data.DataLoader(train_set, batch_size=1, shuffle=True, num_workers=8)
+    trainloader_acc = torch.utils.data.DataLoader(train_indices_acc, batch_size=1, shuffle=True, num_workers=8)
     validationloader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=8)
 
     class HeartNet(nn.Module):
@@ -176,17 +177,21 @@ if __name__ == '__main__':
 
         # print statistics
         running_loss += loss.item() # .item() retourne la valeur dans le tenseur et non le tenseur lui même
-        if i % 1000 == 999: # print every 1000 mini-batche
+        if i % 10000 == 9999: # print every 1000 mini-batche
 
             with open('loss/loss.txt', 'a') as the_file:
-                the_file.write(str(running_loss)+';'+str(i+(epoch-1)*int(len(dataset.targets)/10*0.8))+'\n')
-            print(f"[epoch {epoch + 1}, batch {i+1}/{int(len(dataset.targets)/10*0.8)}], loss : {running_loss / 1000}")
+                the_file.write(str((running_loss/ 10000))+'\n')
+            print(f"[epoch {epoch + 1}, batch {i+1}/{int(len(dataset.targets)/10*0.8)}], loss : {running_loss / 10000}")
             running_loss = 0.0
             ##############################################################################################################################
             ###############################################ACCURACY EVALUATION############################################################
             ##############################################################################################################################
             net.eval()
             correct = 0
+            true_positive = 0
+            true_negative = 0
+            false_positive = 0
+            false_negative = 0
             Confusion_matrix = Confusion_matrix * 0
             print("******************************************************************")
             print("****************************EVALUATION****************************")
@@ -212,6 +217,14 @@ if __name__ == '__main__':
                     Confusion_matrix[5][pred] += 1
                 if labels == 6:  # Ventricular_premature
                     Confusion_matrix[6][pred] += 1
+                if ((labels == 0) and (pred==0)) or ((labels == 1) and (pred==1)) or ((labels == 3) and (pred==3)) or ((labels == 4) and (pred==4)) or ((labels == 5) and (pred==5)) or ((labels == 6) and (pred==6)):
+                    true_positive += 1
+                if ((labels == 2) and (pred==2)) :
+                    true_negative += 1
+                if ((labels == 0) and (pred!=0)) or ((labels == 1) and (pred!=1)) or ((labels == 3) and (pred!=3)) or ((labels == 4) and (pred!=4)) or ((labels == 5) and (pred!=5)) or ((labels == 6) and (pred!=6)):
+                    false_positive += 1
+                if ((labels == 2) and (pred != 2)):
+                    false_negative += 1
 
                 output_trans = (torch.max(torch.exp(outputs), 1)[1]).data.cpu().numpy()
                 y_pred.extend(output_trans)  # Save Prediction
@@ -219,6 +232,10 @@ if __name__ == '__main__':
                 labels = labels.data.cpu().numpy()
                 y_true.extend(labels)  # Save Truth
             print(f"Epoch : {epoch + 1} - Taux de classification = {correct / len(validationloader)}")
+            print("true positive : " + str(true_positive))
+            print("true negative : " + str(true_negative))
+            print("false positive : " + str(false_positive))
+            print("false negative : " + str(false_negative))
             print(Confusion_matrix.astype(int))
             ###################################################################################
             cf_matrix = confusion_matrix(y_true, y_pred)
@@ -236,6 +253,7 @@ if __name__ == '__main__':
             #################################################ACCURACY TRAINING############################################################
             ##############################################################################################################################
             correct = 0
+
             Confusion_matrix = Confusion_matrix * 0
             print("******************************************************************")
             print("****************************TRAINING******************************")
@@ -261,6 +279,7 @@ if __name__ == '__main__':
                     Confusion_matrix[5][pred] += 1
                 if labels == 6:  # Ventricular_premature
                     Confusion_matrix[6][pred] += 1
+
 
                 output_trans = (torch.max(torch.exp(outputs), 1)[1]).data.cpu().numpy()
                 y_pred.extend(output_trans)  # Save Prediction
