@@ -196,8 +196,8 @@ if __name__ == '__main__':
             print("******************************************************************")
             print("****************************EVALUATION****************************")
             print("******************************************************************")
-            for increment_val, data in tqdm(enumerate(validationloader, 0)):
-                inputs, labels = data[0].to(gpu), data[1].to(gpu)
+            for increment_val, data_val in tqdm(enumerate(validationloader, 0)):
+                inputs, labels = data_val[0].to(gpu), data_val[1].to(gpu)
                 outputs = net(inputs)
                 pred = outputs.argmax()  # mon_tenseur.argmax() donne l'index de l'élément le plus élevé de l'output, et donc on récupère la classe prédite par notre algo
                 # mon_tenseur.argmax(-1) donnera le même résultat
@@ -258,8 +258,8 @@ if __name__ == '__main__':
             print("******************************************************************")
             print("****************************TRAINING******************************")
             print("******************************************************************")
-            for increment_train, data in tqdm(enumerate(trainloader_acc, 0)):
-                inputs, labels = data[0].to(gpu), data[1].to(gpu)
+            for increment_train, data_train in tqdm(enumerate(trainloader_acc, 0)):
+                inputs, labels = data_train[0].to(gpu), data_train[1].to(gpu)
                 outputs = net(inputs)
                 pred = outputs.argmax()  # mon_tenseur.argmax() donne l'index de l'élément le plus élevé de l'output, et donc on récupère la classe prédite par notre algo
                 # mon_tenseur.argmax(-1) donnera le même résultat
