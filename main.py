@@ -239,12 +239,12 @@ if __name__ == '__main__':
             print(Confusion_matrix.astype(int))
             with open('sensitivity/sens.txt', 'a') as the_file:
                 the_file.write(str((Confusion_matrix[0][0]/(Confusion_matrix[0][0]+Confusion_matrix[1][0]+Confusion_matrix[2][0]+Confusion_matrix[3][0]+Confusion_matrix[4][0]+Confusion_matrix[5][0]+Confusion_matrix[6][0])))+",")
-                the_file.write(str((Confusion_matrix[0][1]/(Confusion_matrix[0][1]+Confusion_matrix[1][1]+Confusion_matrix[2][1]+Confusion_matrix[3][1]+Confusion_matrix[4][1]+Confusion_matrix[5][1]+Confusion_matrix[6][1])))+",")
-                the_file.write(str((Confusion_matrix[0][2]/(Confusion_matrix[0][2]+Confusion_matrix[1][2]+Confusion_matrix[2][2]+Confusion_matrix[3][2]+Confusion_matrix[4][2]+Confusion_matrix[5][2]+Confusion_matrix[6][2])))+",")
-                the_file.write(str((Confusion_matrix[0][3]/(Confusion_matrix[0][3]+Confusion_matrix[1][3]+Confusion_matrix[2][3]+Confusion_matrix[3][3]+Confusion_matrix[4][3]+Confusion_matrix[5][3]+Confusion_matrix[6][3])))+",")
-                the_file.write(str((Confusion_matrix[0][4]/(Confusion_matrix[0][4]+Confusion_matrix[1][4]+Confusion_matrix[2][4]+Confusion_matrix[3][4]+Confusion_matrix[4][4]+Confusion_matrix[5][4]+Confusion_matrix[6][4])))+",")
-                the_file.write(str((Confusion_matrix[0][5]/(Confusion_matrix[0][5]+Confusion_matrix[1][5]+Confusion_matrix[2][5]+Confusion_matrix[3][5]+Confusion_matrix[4][5]+Confusion_matrix[5][5]+Confusion_matrix[6][5])))+'\n')
-                the_file.write(str((Confusion_matrix[0][6] / (
+                the_file.write(str((Confusion_matrix[1][1]/(Confusion_matrix[0][1]+Confusion_matrix[1][1]+Confusion_matrix[2][1]+Confusion_matrix[3][1]+Confusion_matrix[4][1]+Confusion_matrix[5][1]+Confusion_matrix[6][1])))+",")
+                the_file.write(str((Confusion_matrix[2][2]/(Confusion_matrix[0][2]+Confusion_matrix[1][2]+Confusion_matrix[2][2]+Confusion_matrix[3][2]+Confusion_matrix[4][2]+Confusion_matrix[5][2]+Confusion_matrix[6][2])))+",")
+                the_file.write(str((Confusion_matrix[3][3]/(Confusion_matrix[0][3]+Confusion_matrix[1][3]+Confusion_matrix[2][3]+Confusion_matrix[3][3]+Confusion_matrix[4][3]+Confusion_matrix[5][3]+Confusion_matrix[6][3])))+",")
+                the_file.write(str((Confusion_matrix[4][4]/(Confusion_matrix[0][4]+Confusion_matrix[1][4]+Confusion_matrix[2][4]+Confusion_matrix[3][4]+Confusion_matrix[4][4]+Confusion_matrix[5][4]+Confusion_matrix[6][4])))+",")
+                the_file.write(str((Confusion_matrix[5][5]/(Confusion_matrix[0][5]+Confusion_matrix[1][5]+Confusion_matrix[2][5]+Confusion_matrix[3][5]+Confusion_matrix[4][5]+Confusion_matrix[5][5]+Confusion_matrix[6][5])))+'\n')
+                the_file.write(str((Confusion_matrix[6][6] / (
                             Confusion_matrix[0][6] + Confusion_matrix[1][6] + Confusion_matrix[2][6] +
                             Confusion_matrix[3][6] + Confusion_matrix[4][6] + Confusion_matrix[5][6] +
                             Confusion_matrix[6][6]))) + '\n')
